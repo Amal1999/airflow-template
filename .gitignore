@@ -120,3 +120,9 @@ venv.bak/
 
 # Makefile
 .Makefile
+
+#secrets
+airflow_ssh_key
+airflow_ssh_key.pub 
+airflow_ssh_secret.yaml
+git-credentials-secret.yaml
