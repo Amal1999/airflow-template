@@ -1,5 +1,6 @@
 import os
 import requests
+import logging
 from pendulum import datetime
 from airflow.decorators import task, dag
 from airflow.providers.postgres.hooks.postgres import PostgresHook
@@ -33,8 +34,13 @@ def my_own_dag():
                     file,
                 )
             conn.commit()
+        try:
+            get_data()
+        except Exception as e:
+            # Log the error
+            logging.error("An error occurred: %s", str(e))
+            # Raise the error to mark the task as failed
+            raise
 
-
-        get_data()
 
 my_own_dag()
