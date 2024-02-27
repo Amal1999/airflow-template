@@ -2438,25 +2438,26 @@ dags:
     subPath: ~
   gitSync:
     enabled: true
-    repo: git@github.com:Amal1999/airflow-template.git
+    repo: https://github.com/Amal1999/airflow-template.git
     branch: master
-    subPath: "/dags"
-    sshKeySecret: airflow-ssh-secret
+    subPath: "dags"
+    #sshKeySecret: airflow-ssh-secret
+    credentialsSecret: git-credentials-secret
 
     # git repo clone url
     # ssh example: git@github.com:apache/airflow.git
     # https example: https://github.com/apache/airflow.git
-    repo: https://github.com/apache/airflow.git
-    branch: v2-2-stable
-    rev: HEAD
+    #repo: https://github.com/apache/airflow.git
+    #branch: v2-2-stable
+    #rev: HEAD
     # The git revision (branch, tag, or hash) to check out, v4 only
-    ref: v2-2-stable
+    #ref: v2-2-stable
     depth: 1
     # the number of consecutive failures allowed before aborting
     maxFailures: 0
     # subpath within the repo where dags are located
     # should be "" if dags are at repo root
-    subPath: "tests/dags"
+    #subPath: "tests/dags"
     # if your repo needs a user name password
     # you can load them to a k8s secret like the one below
     #   ---
