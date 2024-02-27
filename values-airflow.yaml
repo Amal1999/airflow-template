@@ -2440,7 +2440,7 @@ dags:
     enabled: true
     repo: https://github.com/Amal1999/airflow-template.git
     branch: master
-    subPath: "/dags"
+    subPath: "dags"
     #sshKeySecret: airflow-ssh-secret
     credentialsSecret: git-credentials-secret
 
