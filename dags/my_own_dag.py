@@ -20,9 +20,9 @@ def my_own_dag():
             # NOTE: configure this as appropriate for your airflow environment
             data_path = "/opt/airflow/dags/files/employees.csv"
             os.makedirs(os.path.dirname(data_path), exist_ok=True)
-            url = "https://raw.githubusercontent.com/apache/airflow/main/docs/apache-airflow/tutorial/pipeline_example.csv"
+            # url = "https://raw.githubusercontent.com/apache/airflow/main/docs/apache-airflow/tutorial/pipeline_example.csv"
 
-            response = requests.request("GET", url)
+            # response = requests.request("GET", url)
 
             # with open(data_path, "w") as file:
             #     file.write(response.text)
