@@ -9,7 +9,6 @@ logger = logging.getLogger(__name__)
 
 
 @dag(
-    owner= 'airflow',
     start_date=datetime(2022,11,1),
     schedule="@daily",
     catchup=False
