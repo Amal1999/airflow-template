@@ -817,6 +817,8 @@ scheduler:
     periodSeconds: 10
     timeoutSeconds: 20
     command: ~
+
+
   # Airflow 2.0 allows users to run multiple schedulers,
   # However this feature is only recommended for MySQL 8+ and Postgres
   replicas: 1
@@ -2551,7 +2553,7 @@ logs:
 
   persistence:
     # Enable persistent volume for storing logs
-    enabled: false
+    enabled: true
     # Volume size for logs
     size: 100Gi
     # Annotations for the logs PVC

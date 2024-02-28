@@ -5,7 +5,11 @@ from pendulum import datetime
 from airflow.decorators import task, dag
 from airflow.providers.postgres.hooks.postgres import PostgresHook
 
+logger = logging.getLogger(__name__)
+
+
 @dag(
+    owner= 'airflow',
     start_date=datetime(2022,11,1),
     schedule="@daily",
     catchup=False
@@ -14,11 +18,14 @@ def my_own_dag():
 
         @task
         def get_data():
-            # NOTE: configure this as appropriate for your airflow environment
-            data_path = "/opt/airflow/dags/files/employees.csv"
-            os.makedirs(os.path.dirname(data_path), exist_ok=True)
+            try:
+                # NOTE: configure this as appropriate for your airflow environment
+                data_path = "/opt/airflow/dags/files/employees.csv"
+                os.makedirs(os.path.dirname(data_path), exist_ok=True)
 
-            print("helloooo")
+                print("helloooo")
+            except:
+                logger.info("This is a log message")
             # url = "https://raw.githubusercontent.com/apache/airflow/main/docs/apache-airflow/tutorial/pipeline_example.csv"
 
             # response = requests.request("GET", url)
