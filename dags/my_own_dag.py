@@ -18,14 +18,14 @@ def my_own_dag():
         @task
         def get_data():
             # NOTE: configure this as appropriate for your airflow environment
-            data_path = "/opt/airflow/files"
+            data_path = "/opt/airflow/files/employees.csv"
             os.makedirs(os.path.dirname(data_path), mode=777, exist_ok=True)
             
             url = "https://raw.githubusercontent.com/apache/airflow/main/docs/apache-airflow/tutorial/pipeline_example.csv"
 
             response = requests.request("GET", url)
 
-            with open(data_path+"/employees.csv", "w") as file:
+            with open(data_path, "w") as file:
                 file.write(response.text)
 
             # postgres_hook = PostgresHook(postgres_conn_id="tutorial_pg_conn")
