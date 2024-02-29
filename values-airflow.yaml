@@ -47,10 +47,10 @@ uid: 50000
 gid: 0
 
 # Default security context for airflow (deprecated, use `securityContexts` instead)
-securityContext: {}
-#  runAsUser: 50000
-#  fsGroup: 0
-#  runAsGroup: 0
+securityContext: #{}
+  runAsUser: 50000
+  fsGroup: 0
+  runAsGroup: 0
 
 # Detailed default security context for airflow deployments
 securityContexts:
@@ -280,6 +280,9 @@ volumes: []
 
 # VolumeMounts for all airflow containers
 volumeMounts: []
+
+
+
 
 # Secrets for all airflow containers
 secret: []
@@ -525,14 +528,17 @@ workers:
 
   # When not set, the values defined in the global securityContext will be used
   securityContext: {}
-  #  runAsUser: 50000
-  #  fsGroup: 0
-  #  runAsGroup: 0
+    # runAsUser: 50000
+    # fsGroup: 0
+    # runAsGroup: 0
 
   # Detailed default security context for worker deployments for container and pod level
   securityContexts:
-    pod: {}
-    container: {}
+    pod:
+      runAsUser: 50000
+      fsGroup: 0
+    containers:
+      allowPrivilegeEscalation: true
 
   # container level lifecycle hooks
   containerLifecycleHooks: {}
@@ -846,8 +852,11 @@ scheduler:
 
   # Detailed default security context for scheduler deployments for container and pod level
   securityContexts:
-    pod: {}
-    container: {}
+    pod:
+      runAsUser: 50000
+      fsGroup: 0
+    containers:
+      allowPrivilegeEscalation: true
 
   # container level lifecycle hooks
   containerLifecycleHooks: {}
@@ -907,6 +916,14 @@ scheduler:
   #       readOnly: true
   extraVolumes: []
   extraVolumeMounts: []
+
+  # extraVolumes:
+  #   - name: extra-volume-tasks
+  
+  # extraVolumeMounts:
+  #   - name: extra-volume-tasks
+  #     mountPath: "{{ .Values.airflowHome }}/dags/files"
+  #     readOnly: false
 
   # Select certain nodes for airflow scheduler pods.
   nodeSelector: {}
@@ -2427,7 +2444,7 @@ dags:
     # Annotations for dags PVC
     annotations: {}
     # Enable persistent volume for storing dags
-    enabled: false
+    enabled: False
     # Volume size for dags
     size: 1Gi
     # If using a custom storageClass, pass name here
