@@ -19,7 +19,7 @@ def my_own_dag():
         def get_data():
             # NOTE: configure this as appropriate for your airflow environment
             data_path = "/opt/airflow/files/employees.csv"
-            os.makedirs(os.path.dirname(data_path), mode=775, exist_ok=True)
+            os.makedirs(os.path.dirname(data_path), mode=777, exist_ok=True)
             url = "https://raw.githubusercontent.com/apache/airflow/main/docs/apache-airflow/tutorial/pipeline_example.csv"
 
             response = requests.request("GET", url)
