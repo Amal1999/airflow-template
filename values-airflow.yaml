@@ -278,10 +278,9 @@ env: []
 # Volumes for all airflow containers
 volumes: []
 
+
 # VolumeMounts for all airflow containers
 volumeMounts: []
-
-
 
 
 # Secrets for all airflow containers
@@ -702,8 +701,11 @@ workers:
   #     - name: my-templated-extra-volume
   #       mountPath: "{{ .Values.my_custom_path }}"
   #       readOnly: true
-  extraVolumes: []
-  extraVolumeMounts: []
+  extraVolumes: #[]
+    - name: tasks-storage
+  extraVolumeMounts: #[]
+    - name: tasks-storage
+      mountPath: "{{ .Values.airflowHome }}/files"
 
   # Select certain nodes for airflow worker pods.
   nodeSelector: {}
@@ -770,7 +772,17 @@ workers:
 
   env: []
 
-  volumeClaimTemplates: []
+  volumeClaimTemplates: #[]
+    - metadata:
+        name: tasks-storage
+      spec:
+        storageClassName: "storage-class-1"
+        accessModes:
+          - "ReadWriteMany"
+        resources:
+          requests:
+            storage: "10Gi"
+
   # Additional volumeClaimTemplates needed.
   # Comment out the above and uncomment the section below to enable it.
   # Add more as needed
@@ -2356,8 +2368,8 @@ config:
     statsd_host: '{{ printf "%s-statsd" (include "airflow.fullname" .) }}'
   webserver:
     enable_proxy_fix: 'True'
-    # For Airflow 1.10
-    rbac: 'True'
+    # For Airflow 1.10 
+    rbac: 'False' #'True'
   celery:
     flower_url_prefix: '{{ ternary "" .Values.ingress.flower.path (eq .Values.ingress.flower.path "/") }}'
     worker_concurrency: 16
