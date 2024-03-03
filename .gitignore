@@ -126,3 +126,4 @@ airflow_ssh_key
 airflow_ssh_key.pub 
 airflow_ssh_secret.yaml
 git-credentials-secret.yaml
+airflow-gcp-key.json

@@ -47,10 +47,7 @@ uid: 50000
 gid: 0
 
 # Default security context for airflow (deprecated, use `securityContexts` instead)
-securityContext: #{}
-  runAsUser: 50000
-  fsGroup: 0
-  runAsGroup: 0
+securityContext: {}
 
 # Detailed default security context for airflow deployments
 securityContexts:
@@ -276,11 +273,17 @@ env: []
 #   value: ""
 
 # Volumes for all airflow containers
-volumes: []
+volumes: #[]
+  - name: gdrive-credentials
+    secret:
+      secretName: gdrive-credentials
+
 
 
 # VolumeMounts for all airflow containers
-volumeMounts: []
+volumeMounts: #[]
+  - name: gdrive-credentials
+    mountPath: /etc/gdrive-credentials
 
 
 # Secrets for all airflow containers
@@ -701,11 +704,8 @@ workers:
   #     - name: my-templated-extra-volume
   #       mountPath: "{{ .Values.my_custom_path }}"
   #       readOnly: true
-  extraVolumes: #[]
-    - name: tasks-storage
-  extraVolumeMounts: #[]
-    - name: tasks-storage
-      mountPath: "{{ .Values.airflowHome }}/files"
+  extraVolumes: []
+  extraVolumeMounts: []
 
   # Select certain nodes for airflow worker pods.
   nodeSelector: {}
@@ -772,16 +772,7 @@ workers:
 
   env: []
 
-  volumeClaimTemplates: #[]
-    - metadata:
-        name: tasks-storage
-      spec:
-        storageClassName: "storage-class-1"
-        accessModes:
-          - "ReadWriteMany"
-        resources:
-          requests:
-            storage: "10Gi"
+  volumeClaimTemplates: []
 
   # Additional volumeClaimTemplates needed.
   # Comment out the above and uncomment the section below to enable it.
@@ -2582,12 +2573,12 @@ logs:
 
   persistence:
     # Enable persistent volume for storing logs
-    enabled: true
+    enabled: false
     # Volume size for logs
     size: 100Gi
     # Annotations for the logs PVC
     annotations: {}
     # If using a custom storageClass, pass name here
-    storageClassName:
+    storageClassName: airflow-logs
     ## the name of an existing PVC to use
-    existingClaim:
+    existingClaim: 
