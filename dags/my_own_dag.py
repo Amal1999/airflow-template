@@ -42,7 +42,7 @@ def my_own_dag():
             task_id='get_data_from_google_drive',
             output_file = "/usr/airflow/files/airline_review.csv",
             file_name = "airline_review.csv",
-            folder_id = "airflow",
+            folder_id = "18YcIKcs2FM4bX_XFZ5mx3eSQcMasq5wd",
             drive_id=None,
             gcp_conn_id="google_cloud_connection",
             impersonation_chain=None,
