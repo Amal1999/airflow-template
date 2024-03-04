@@ -7,7 +7,6 @@ from airflow.contrib.hooks.gdrive_hook import GoogleDriveHook
 import pandas as pd
 
 logger = logging.getLogger(__name__)
-
 # Define DAG arguments
 default_args = {
     'owner': 'airflow',
@@ -22,13 +21,10 @@ def fetch_data_from_drive():
     file_handle = BytesIO()
     gdrive_hook.download_file(file_id=file_id, file_handle=file_handle)
     file_handle.seek(0)
-    # Read the file content as a string
     file_content = file_handle.read().decode('utf-8')
     return file_content
 
-
-
-# Function to preprocess the data
+# Function to preprocess the data (just for test purposes)
 def preprocess_data(**kwargs):
     # Get the file content from the previous task's context
     file_content = kwargs['ti'].xcom_pull(task_ids='fetch_data_from_drive')
@@ -39,18 +35,18 @@ def preprocess_data(**kwargs):
     # Your preprocessing steps here
     # Example: df.dropna(inplace=True)
     
-    # Save the preprocessed data
-    processed_file_path = 'preprocessed_data.csv'
-    df.to_csv(processed_file_path, index=False)
-    return processed_file_path
+    # Convert DataFrame to string
+    preprocessed_data_str = df.to_csv(index=False)
+    
+    return preprocessed_data_str
 
 # Function for feature selection
 def feature_selection(**kwargs):
     # Get the preprocessed data from the previous task's context
-    processed_file_path = kwargs['ti'].xcom_pull(task_ids='preprocess_data')
+    preprocessed_data_str = kwargs['ti'].xcom_pull(task_ids='preprocess_data')
     
-    # Read the preprocessed data
-    df = pd.read_csv(processed_file_path)
+    # Convert preprocessed data string to DataFrame
+    df = pd.read_csv(BytesIO(preprocessed_data_str.encode('utf-8')))
     
     # Select specific features
     selected_features = df[['Airline Name', 'Overall_Rating', 'Review_Title', 'Review Date', 'Review']]
@@ -60,12 +56,11 @@ def feature_selection(**kwargs):
     
     return selected_features_str
 
-
 # Define the DAG
 dag = DAG(
     'fetch_and_preprocess_data_from_gdrive',
     default_args=default_args,
-    description='A DAG to fetch data from Google Drive and preprocess it',
+    description='A DAG to fetch data from Google Drive, preprocess it, and perform feature selection',
     schedule_interval=timedelta(days=1),
 )
 
