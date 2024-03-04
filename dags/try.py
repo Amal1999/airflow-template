@@ -7,6 +7,7 @@ from airflow.contrib.hooks.gdrive_hook import GoogleDriveHook
 import pandas as pd
 
 logger = logging.getLogger(__name__)
+
 # Define DAG arguments
 default_args = {
     'owner': 'airflow',
@@ -43,6 +44,22 @@ def preprocess_data(**kwargs):
     df.to_csv(processed_file_path, index=False)
     return processed_file_path
 
+# Function for feature selection
+def feature_selection(**kwargs):
+    # Get the preprocessed data from the previous task's context
+    processed_file_path = kwargs['ti'].xcom_pull(task_ids='preprocess_data')
+    
+    # Read the preprocessed data
+    df = pd.read_csv(processed_file_path)
+    
+    # Select specific features
+    selected_features = df[['Airline Name', 'Overall_Rating', 'Review_Title', 'Review Date', 'Review']]
+    
+    # Convert selected features to string
+    selected_features_str = selected_features.to_string(index=False)
+    
+    return selected_features_str
+
 
 # Define the DAG
 dag = DAG(
@@ -66,5 +83,12 @@ preprocess_data_task = PythonOperator(
     dag=dag,
 )
 
+feature_selection_task = PythonOperator(
+    task_id='feature_selection',
+    python_callable=feature_selection,
+    provide_context=True,
+    dag=dag,
+)
+
 # Define task dependencies
-fetch_data_task >> preprocess_data_task
+fetch_data_task >> preprocess_data_task >> feature_selection_task
