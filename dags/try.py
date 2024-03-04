@@ -23,8 +23,6 @@ def fetch_data_from_drive():
     file_handle.seek(0)
     # Read the file content as a string
     file_content = file_handle.read().decode('utf-8')
-    logger.info(msg="----------------------- hello ----------------------------")
-    logger.info(msg=file_content)
     return file_content
 
 
