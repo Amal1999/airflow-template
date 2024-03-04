@@ -704,8 +704,13 @@ workers:
   #     - name: my-templated-extra-volume
   #       mountPath: "{{ .Values.my_custom_path }}"
   #       readOnly: true
-  extraVolumes: []
-  extraVolumeMounts: []
+  extraVolumes: #[]
+    - name: get-data-volume
+
+  extraVolumeMounts: #[]
+    - name: get-data-volume
+      mountPath: "usr/airflow/files"
+
 
   # Select certain nodes for airflow worker pods.
   nodeSelector: {}
@@ -772,7 +777,16 @@ workers:
 
   env: []
 
-  volumeClaimTemplates: []
+  volumeClaimTemplates: #[]
+    - metadata:
+        name: get-data-volume
+      spec:
+        storageClassName: "storage-class-1"
+        accessModes:
+          - "ReadWriteMany"
+        resources:
+          requests:
+            storage: "10Gi"
 
   # Additional volumeClaimTemplates needed.
   # Comment out the above and uncomment the section below to enable it.
