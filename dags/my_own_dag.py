@@ -45,7 +45,6 @@ def my_own_dag():
             folder_id = "airflow",
             drive_id=None,
             gcp_conn_id="gcp-connection",
-            delegate_to=None,
             impersonation_chain=None,
             )
         get_data()
