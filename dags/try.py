@@ -5,6 +5,8 @@ from airflow import DAG
 from airflow.operators.python_operator import PythonOperator
 from airflow.contrib.hooks.gdrive_hook import GoogleDriveHook
 import pandas as pd
+from sklearn.model_selection import train_test_split
+
 
 logger = logging.getLogger(__name__)
 # Define DAG arguments
@@ -38,7 +40,6 @@ def feature_selection(**kwargs):
 
 
 def split_data(**kwargs):
-    from sklearn.model_selection import train_test_split
 
     selected_data = kwargs['ti'].xcom_pull(task_ids='feature_selection')
     

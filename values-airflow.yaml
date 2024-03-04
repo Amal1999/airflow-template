@@ -381,6 +381,7 @@ extraEnvFrom: ~
 #   - configMapRef:
 #       name: '{{ .Release.Name }}-airflow-variables'
 
+
 # Airflow database & redis config
 data:
   # If secret names are provided, use those secrets
@@ -509,6 +510,7 @@ workers:
     - |-
       exec \
       airflow {{ semverCompare ">=2.0.0" .Values.airflowVersion | ternary "celery worker" "worker" }}
+
 
   # If the worker stops responding for 5 minutes (5*60s) kill the
   # worker and let Kubernetes restart it
