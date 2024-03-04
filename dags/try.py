@@ -30,9 +30,12 @@ def fetch_data_from_drive():
 
 
 # Function to preprocess the data
-def preprocess_data(file_content):
+def preprocess_data(**kwargs):
+    # Get the file content from the previous task's context
+    file_content = kwargs['ti'].xcom_pull(task_ids='fetch_data_from_drive')
+
     # Assuming the data is CSV
-    df = pd.read_csv(file_content)
+    df = pd.read_csv(BytesIO(file_content))
     
     # Your preprocessing steps here
     # Example: df.dropna(inplace=True)
@@ -41,6 +44,7 @@ def preprocess_data(file_content):
     processed_file_path = 'preprocessed_data.csv'
     df.to_csv(processed_file_path, index=False)
     return processed_file_path
+
 
 # Define the DAG
 dag = DAG(
