@@ -47,7 +47,8 @@ def my_own_dag():
             gcp_conn_id="gcp-connection",
             impersonation_chain=None,
             )
-        get_data()
+        
+        get_data
        
 
 
