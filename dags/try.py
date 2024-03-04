@@ -1,3 +1,4 @@
+from io import BytesIO
 from datetime import datetime, timedelta
 import logging
 from airflow import DAG
@@ -17,18 +18,14 @@ default_args = {
 def fetch_data_from_drive():
     gdrive_hook = GoogleDriveHook(gcp_conn_id='google_drive_default')
     file_id = '1RZQhhr8ff1WWZ0c2Mo5G-4LTwJZez9Bw'
-    # The download_file method requires a file handle to write the content to.
-    # We can use a BytesIO object as the file handle.
-    from io import BytesIO
     file_handle = BytesIO()
     gdrive_hook.download_file(file_id=file_id, file_handle=file_handle)
-    # Get the content of the file from the file handle
     file_handle.seek(0)
-    file_content = file_handle.read()
+    # Read the file content as a string
+    file_content = file_handle.read().decode('utf-8')
     logger.info(msg="----------------------- hello ----------------------------")
     logger.info(msg=file_content)
 
-    return file_content
 
 
 # Function to preprocess the data
