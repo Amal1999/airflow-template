@@ -2573,12 +2573,12 @@ logs:
 
   persistence:
     # Enable persistent volume for storing logs
-    enabled: false
+    enabled: true
     # Volume size for logs
     size: 100Gi
     # Annotations for the logs PVC
     annotations: {}
     # If using a custom storageClass, pass name here
-    storageClassName: airflow-logs
+    storageClassName:
     ## the name of an existing PVC to use
     existingClaim: 
