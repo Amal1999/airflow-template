@@ -35,7 +35,7 @@ def preprocess_data(**kwargs):
     file_content = kwargs['ti'].xcom_pull(task_ids='fetch_data_from_drive')
 
     # Assuming the data is CSV
-    df = pd.read_csv(BytesIO(file_content))
+    df = pd.read_csv(BytesIO(file_content.encode('utf-8')))
     
     # Your preprocessing steps here
     # Example: df.dropna(inplace=True)
