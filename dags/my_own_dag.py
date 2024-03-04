@@ -44,7 +44,7 @@ def my_own_dag():
             file_name = "airline_review.csv",
             folder_id = "18YcIKcs2FM4bX_XFZ5mx3eSQcMasq5wd",
             drive_id=None,
-            gcp_conn_id="google_cloud_default",
+            #gcp_conn_id="google_cloud_default",
             impersonation_chain=None,
             )
         
