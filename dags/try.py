@@ -1,25 +1,26 @@
 from datetime import datetime, timedelta
+import logging
 from airflow import DAG
 from airflow.operators.python_operator import PythonOperator
 from airflow.contrib.hooks.gdrive_hook import GoogleDriveHook
 import pandas as pd
 
+logger = logging.getLogger(__name__)
 # Define DAG arguments
 default_args = {
     'owner': 'airflow',
     'depends_on_past': False,
-    'start_date': datetime(2024, 3, 4),
-    'email_on_failure': False,
-    'email_on_retry': False,
-    'retries': 1,
-    'retry_delay': timedelta(minutes=5),
+    'start_date': datetime(2024, 3, 4)
 }
 
 # Function to fetch data from Google Drive
 def fetch_data_from_drive():
     gdrive_hook = GoogleDriveHook(gcp_conn_id='google_drive_default')
     file_id = '1RZQhhr8ff1WWZ0c2Mo5G-4LTwJZez9Bw'
-    file_content = gdrive_hook.download(file_id=file_id)
+    file_content = gdrive_hook.download_file(file_id=file_id,)
+    logger.info(msg="----------------------- hello ----------------------------")
+    logger.info(msg=file_content)
+
     return file_content
 
 # Function to preprocess the data
