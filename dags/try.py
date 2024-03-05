@@ -52,6 +52,8 @@ def split_data(**kwargs):
     # Split the data into training (70%), validation (15%), and test (15%) sets
     X_train, X_temp, y_train, y_temp = train_test_split(X, y, test_size=0.3, random_state=42)
     X_val, X_test, y_val, y_test = train_test_split(X_temp, y_temp, test_size=0.5, random_state=42)
+
+    logger.debug("------------ you passes splitting data ----------------")
     
     # Convert sets to CSV string format
     train_str = X_train.to_csv(index=False) + '\n' + y_train.to_csv(index=False)
