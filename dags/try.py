@@ -43,6 +43,7 @@ def split_data(**kwargs):
     from sklearn.model_selection import train_test_split
     selected_data_str = kwargs['ti'].xcom_pull(task_ids='feature_selection')
     logger.info("------------ getting selected data ----------------")
+    logger.info(selected_data_str)
 
     df = pd.read_csv(BytesIO(selected_data_str.encode('utf-8')))
 
