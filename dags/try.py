@@ -15,7 +15,7 @@ default_args = {
 }
 
 def fetch_data_from_drive():
-    gdrive_hook = GoogleDriveHook(gcp_conn_id='google_drive_default')
+    gdrive_hook = GoogleDriveHook(gcp_conn_id='google_cloud_default')
     file_id = '1RZQhhr8ff1WWZ0c2Mo5G-4LTwJZez9Bw'
     file_handle = BytesIO()
     gdrive_hook.download_file(file_id=file_id, file_handle=file_handle)
