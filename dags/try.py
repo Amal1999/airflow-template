@@ -33,8 +33,9 @@ def feature_selection(**kwargs):
     # Select specific features
     selected_features = df[['Airline Name', 'Overall_Rating', 'Review_Title', 'Review Date', 'Review', 'Recommended']]
 
+
     # Convert selected_features to string
-    selected_features_str = selected_features.to_string(index=False)
+    selected_features_str = selected_features.to_csv(index=False)
 
     return selected_features_str
 
