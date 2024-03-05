@@ -76,8 +76,8 @@ airflowVersion: "2.8.1"
 # Images
 images:
   airflow:
-    repository: ~
-    tag: ~
+    repository: docker.io/15758622001/airflow #~
+    tag: latest #~
     # Specifying digest takes precedence over tag.
     digest: ~
     pullPolicy: IfNotPresent
