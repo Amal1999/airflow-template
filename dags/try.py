@@ -43,8 +43,6 @@ def feature_selection(**kwargs):
 def split_data(**kwargs):
     from sklearn.model_selection import train_test_split
     selected_data_str = kwargs['ti'].xcom_pull(task_ids='feature_selection')
-    logger.info("------------ getting selected data ----------------")
-    logger.info(selected_data_str)
 
     df = pd.read_csv(BytesIO(selected_data_str.encode('utf-8')))
 
@@ -57,13 +55,9 @@ def split_data(**kwargs):
     X = df[['Airline Name', 'Overall_Rating', 'Review_Title', 'Review Date', 'Review']]
     y = df['Recommended']
 
-    logger.info("------------ Passed X and Y ----------------")
-
     # Split the data into training (70%), validation (15%), and test (15%) sets
     X_train, X_temp, y_train, y_temp = train_test_split(X, y, test_size=0.3, random_state=42)
     X_val, X_test, y_val, y_test = train_test_split(X_temp, y_temp, test_size=0.5, random_state=42)
-
-    logger.info("------------ you passes splitting data ----------------")
     
     # Convert sets to CSV string format
     train_str = X_train.to_csv(index=False) + '\n' + y_train.to_csv(index=False)
