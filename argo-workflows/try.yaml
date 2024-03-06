@@ -1,0 +1,191 @@
+# apiVersion: argoproj.io/v1alpha1
+# kind: Workflow
+# metadata:
+#   generateName: fetch-and-preprocess-data-from-gdrive-
+# spec:
+#   entrypoint: fetch-and-preprocess-data
+#   templates:
+#   - name: fetch-data-from-drive
+#     script:
+#       image: python:3.9
+#       command: [python]
+#       source: |
+#         from io import BytesIO
+#         import logging
+#         import pandas as pd
+#         from google.cloud import storage
+        
+#         logging.basicConfig(level=logging.INFO)
+#         logger = logging.getLogger(__name__)
+        
+#         def fetch_data_from_drive():
+#             # Fetch data from Google Drive
+#             # Replace the following lines with your Google Drive download logic
+#             file_content = b"Airline Name,Overall_Rating,Review_Title,Review_Date,Review,Recommended\nAmerican Airlines,5.0,Great Service,2024-03-01,Excellent flight experience,True\n"
+#             return file_content
+        
+#         file_content = fetch_data_from_drive()
+        
+#         # Output the fetched data
+#         print(file_content.decode('utf-8'))
+#     outputs:
+#       parameters:
+#       - name: fetched_data
+#         valueFrom:
+#           expression: "{{steps.fetch-data-from-drive.outputs.result}}"
+          
+#   - name: feature-selection
+#     script:
+#       image: python:3.9
+#       command: [python]
+#       source: |
+#         from io import BytesIO
+#         import pandas as pd
+        
+#         def feature_selection():
+#             # Get the fetched data from the previous task's output
+#             fetched_data = "{{inputs.parameters.fetched_data}}"
+            
+#             # Assuming the data is CSV
+#             df = pd.read_csv(BytesIO(fetched_data.encode('utf-8')))
+            
+#             # Select specific features
+#             selected_features = df[['Airline Name', 'Overall_Rating', 'Review_Title', 'Review_Date', 'Review', 'Recommended']]
+            
+#             # Convert selected_features to string
+#             selected_features_str = selected_features.to_csv(index=False)
+#             return selected_features_str
+        
+#         selected_features_str = feature_selection()
+        
+#         # Output the selected features
+#         print(selected_features_str)
+#     inputs:
+#       parameters:
+#       - name: fetched_data
+#         value: "{{steps.fetch-data-from-drive.outputs.parameters.fetched_data}}"
+#     outputs:
+#       parameters:
+#       - name: selected_features
+#         valueFrom:
+#           expression: "{{steps.feature-selection.outputs.result}}"
+          
+#   - name: split-data
+#     script:
+#       image: python:3.9
+#       command: [python]
+#       source: |
+#         from io import BytesIO
+#         import pandas as pd
+#         from sklearn.model_selection import train_test_split
+        
+#         def split_data():
+#             # Get the selected features from the previous task's output
+#             selected_features_str = "{{inputs.parameters.selected_features}}"
+            
+#             df = pd.read_csv(BytesIO(selected_features_str.encode('utf-8')))
+            
+#             # Split the data into features and target
+#             X = df[['Airline Name', 'Overall_Rating', 'Review_Title', 'Review_Date', 'Review']]
+#             y = df['Recommended']
+            
+#             # Split the data into training (70%), validation (15%), and test (15%) sets
+#             X_train, X_temp, y_train, y_temp = train_test_split(X, y, test_size=0.3, random_state=42)
+#             X_val, X_test, y_val, y_test = train_test_split(X_temp, y_temp, test_size=0.5, random_state=42)
+            
+#             # Convert sets to CSV string format
+#             train_str = X_train.to_csv(index=False) + '\n' + y_train.to_csv(index=False)
+#             val_str = X_val.to_csv(index=False) + '\n' + y_val.to_csv(index=False)
+#             test_str = X_test.to_csv(index=False) + '\n' + y_test.to_csv(index=False)
+            
+#             return train_str, val_str, test_str
+        
+#         train_str, val_str, test_str = split_data()
+        
+#         # Output the split data
+#         print("Training Data:\n", train_str)
+#         print("Validation Data:\n", val_str)
+#         print("Test Data:\n", test_str)
+#     inputs:
+#       parameters:
+#       - name: selected_features
+#         value: "{{steps.feature-selection.outputs.parameters.selected_features}}"
+#   - name: fetch-and-preprocess-data
+#     dag:
+#       tasks:
+#       - name: fetch-data
+#         template: fetch-data-from-drive
+#       - name: feature-selection
+#         dependencies: [fetch-data]
+#         template: feature-selection
+#       - name: split-data
+#         dependencies: [feature-selection]
+#         template: split-data
+
+
+apiVersion: argoproj.io/v1alpha1
+kind: Workflow
+metadata:
+  generateName: fetch-single-file-from-google-drive-
+spec:
+  entrypoint: fetch-single-file-from-google-drive
+  templates:
+  - name: fetch-single-file-from-google-drive
+    steps:
+    - - name: fetch-data
+        template: fetch-data-template
+        arguments:
+          parameters: 
+            - name: file_id
+              value: 1RZQhhr8ff1WWZ0c2Mo5G-4LTwJZez9Bw
+  - name: fetch-data-template
+    inputs:
+      parameters:
+        - name: file_id
+    volumes:
+      - name: google-drive-creds
+        secret:
+          secretName: google-drive-creds-secret
+      - name: fetched-data
+        emptyDir: {}  
+    container:
+      image: python:3.9
+      command: [python]
+      args:
+        - -c
+        - |
+          from googleapiclient.discovery import build
+          from oauth2client.service_account import ServiceAccountCredentials
+          import csv
+          
+          # Load Google Drive credentials from mounted secret
+          credentials = ServiceAccountCredentials.from_json_keyfile_name('/mnt/secrets/google-drive-creds/airflow-gcp-key.json', ['https://www.googleapis.com/auth/drive'])
+          
+          # Authenticate with Google Drive API
+          service = build('drive', 'v3', credentials=credentials)
+            
+          # Fetch specific file by ID
+          file_id = "{{inputs.parameters.file_id}}"
+          file_metadata = service.files().get(fileId=file_id, fields='name').execute()
+          file_name = file_metadata.get('name')
+          
+          if file_name:
+            print(f"File found: {file_name} ({file_id})")
+            
+            # Download file content
+            request = service.files().get_media(fileId=file_id)
+            fh = open('/mnt/data/fetched_file.csv', 'wb')
+            downloader = MediaIoBaseDownload(fh, request)
+            done = False
+            while done is False:
+                status, done = downloader.next_chunk()
+                print("Download %d%%." % int(status.progress() * 100))
+            
+            print("File downloaded successfully.")
+          else:
+            print('File not found.')
+      volumeMounts:
+        - name: google-drive-creds
+          mountPath: "/mnt/secrets/google-drive-creds"
+        - name: fetched-data
+          mountPath: "/mnt/data"
