@@ -60,9 +60,10 @@ def split_data(**kwargs):
     return train_str, val_str, test_str
 
 
-from googleapiclient.http import MediaIoBaseUpload
 
 def upload_splitted_data_to_drive(**kwargs):
+    from googleapiclient.http import MediaIoBaseUpload
+
     local_paths = kwargs['ti'].xcom_pull(task_ids='split_data')
     service = GoogleDriveHook(gcp_conn_id='google_cloud_default').get_conn()
     
